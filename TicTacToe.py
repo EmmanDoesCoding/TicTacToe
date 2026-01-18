@@ -1,10 +1,38 @@
 import random
+import time
+from IPython.display import clear_output
+
+AIScore = 0
+UserScore = 0
+ 
+def clear():
+  time.sleep(1)
+  clear_output()
+
+def playagain():
+  while True:
+    again = input("Want to play again? [Y/N]: ").capitalize()
+    if again == "Y":
+      clear()
+      print("Game Restart!")
+      clear()
+      game()
+      break
+    elif again == "N":
+      clear()
+      print("Thanks for playing")
+      break
+    else:
+      clear()
+      print("Really?")
+
 def BoardLayout(Board):
     print(\
-        f"""
-        [{Board[0]}] [{Board[1]}] [{Board[2]}]
-        [{Board[3]}] [{Board[4]}] [{Board[5]}]
-        [{Board[6]}] [{Board[7]}] [{Board[8]}] """
+f"""
+\t [{Board[0]}] [{Board[1]}] [{Board[2]}]
+\t [{Board[3]}] [{Board[4]}] [{Board[5]}]
+\t [{Board[6]}] [{Board[7]}] [{Board[8]}]
+"""
     )
 
 def Win(Board):
@@ -23,56 +51,72 @@ def Win(Board):
     return None  # No winner yet
 
 def game():
-    Board = [" ", " ", " ",
+  global UserScore
+  global AIScore
+
+  Board = [" ", " ", " ",
             " ", " ", " ",
             " ", " ", " "]
     
-    while True:
-        Choose = input("Which would you like? [O or X]: ").capitalize()
+  while True:
+      Choose = input("Which would you like? [O or X]: ").capitalize()
 
-        if Choose == "O":
-            User = "O"
-            Comp = "X"
-            break
-        elif Choose == "X":
-            User = "X"
-            Comp = "O"
-            break
-        else:
-            print("Stupid motherfucker, Wrong icon")
+      if Choose == "O":
+          User = "⭕"
+          Comp = "✖️"
+          clear()
+          break
+      elif Choose == "X":
+          User = "✖️"
+          Comp = "⭕"
+          clear()
+          break
+      else:
+          print("Stupid motherfucker, Wrong icon")
 
-    print("Game Start!")
-    BoardLayout(Board)
+  print("Game Start!")
+  clear()
+  BoardLayout(Board)
     
-    GameRun = True
+  GameRun = True
 
-    while GameRun:
-        #User turn
-        spot(Board, User, Comp)
-        if Win(Board):
-            print("User wins!")
-            GameRun = False
-            break
+  while GameRun:
+      #User turn
+      spot(Board, User, Comp)
+      if Win(Board):
+        UserScore += 1
+        print("User wins!")
+        print(f"USER: {UserScore}")
+        print(f"AI: {AIScore}")
+        GameRun = False
+        playagain()
+        break
         
-        if " " not in Board:
-            print("It's a DRAW!")
-            break
+      if " " not in Board:
+        print("It's a DRAW!")
+        break
 
-        enemyspot(Board, User, Comp, location)
-        if Win(Board):
-            print("AI wins!")
-            GameRun = False
-            break
+      enemyspot(Board, User, Comp, location)
+      if Win(Board):
+        AIScore += 1
+        print("AI wins!")
+        print(f"USER: {UserScore}")
+        print(f"AI: {AIScore}")
+        GameRun = False
+        playagain()
+        break
 
 
 def spot(Board, User, Comp):
     while True:
         global location
         location = int(input("Where do you want to place your piece? "))
-        if location in range(0, 8):
+        if location in range(0, 9):
             if Board[location] == " ":
+                clear()
                 Board[location] = User
                 BoardLayout(Board)
+                clear()
                 break
             else:
                 print("Choose another number")
@@ -87,6 +131,7 @@ def enemyspot(Board, User, Comp, location):
 
             if Board[enemy] == " ":
                 Board[enemy] = Comp
+                clear()
                 BoardLayout(Board)
                 break
     else:
